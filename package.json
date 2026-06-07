@@ -4,7 +4,10 @@
   "description": "微信云托管 express 框架模版",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "import:game-catalog": "node scripts/import-game-catalog.js",
+    "import:game-catalog:dry-run": "node scripts/import-game-catalog.js --dry-run",
+    "export:game-catalog-sql": "node scripts/import-game-catalog.js --dry-run --output-sql migrations/20260607_002_import_game_catalog_from_excel.sql"
   },
   "author": "",
   "license": "Apache-2.0",
@@ -14,7 +17,8 @@
     "express": "^4.16.4",
     "morgan": "^1.10.0",
     "mysql2": "^2.3.2",
-    "sequelize": "^6.8.0"
+    "sequelize": "^6.8.0",
+    "xlsx": "^0.18.5"
   },
   "engines": {
     "node": ">=12.0.0"

@@ -1,5 +1,9 @@
 const express = require("express");
-const { checkDatabase } = require("../db/mysql");
+const {
+  checkDatabase,
+  listCatalogGames,
+  listDatabaseTables,
+} = require("../db/mysql");
 const { checkStorage } = require("../storage/cos");
 
 const router = express.Router();
@@ -42,6 +46,31 @@ router.get("/db-check", async (req, res, next) => {
   }
 });
 
+router.get("/db-tables", async (req, res, next) => {
+  try {
+    const result = await listDatabaseTables();
+
+    if (!result.ok) {
+      res.status(503).json({
+        code: 1003,
+        message:
+          result.status === "missing_config"
+            ? "MySQL config incomplete"
+            : "MySQL table list failed",
+        data: result,
+      });
+      return;
+    }
+
+    res.json({
+      code: 0,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.get("/storage-check", async (req, res, next) => {
   try {
     const result = await checkStorage();
@@ -53,6 +82,36 @@ router.get("/storage-check", async (req, res, next) => {
           result.status === "missing_config"
             ? "Storage config incomplete"
             : "Storage connection check failed",
+        data: result,
+      });
+      return;
+    }
+
+    res.json({
+      code: 0,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/catalog/games", async (req, res, next) => {
+  try {
+    const result = await listCatalogGames({
+      platform: req.query.platform,
+      keyword: req.query.keyword,
+      limit: req.query.limit,
+      offset: req.query.offset,
+    });
+
+    if (!result.ok) {
+      res.status(503).json({
+        code: 1004,
+        message:
+          result.status === "missing_config"
+            ? "MySQL config incomplete"
+            : "Catalog game list failed",
         data: result,
       });
       return;

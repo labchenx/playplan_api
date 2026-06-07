@@ -1,0 +1,62 @@
+CREATE TABLE IF NOT EXISTS game_catalog (
+  id VARCHAR(64) NOT NULL,
+  name VARCHAR(191) NOT NULL,
+  platform VARCHAR(16) NOT NULL,
+  release_date DATE NULL,
+  publisher VARCHAR(191) NULL,
+  region VARCHAR(64) NULL,
+  cover_url TEXT NULL,
+  cover_thumb_url TEXT NULL,
+  cover_file_id VARCHAR(255) NULL,
+  cover_thumb_file_id VARCHAR(255) NULL,
+  local_image_path VARCHAR(1024) NULL,
+  source_original_url TEXT NULL,
+  source VARCHAR(64) NOT NULL DEFAULT 'manual',
+  source_row INT UNSIGNED NULL,
+  created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_game_catalog_platform_name (platform, name),
+  KEY idx_game_catalog_name (name),
+  KEY idx_game_catalog_platform_release_date (platform, release_date),
+  KEY idx_game_catalog_source (source)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS user_games (
+  id VARCHAR(64) NOT NULL,
+  openid VARCHAR(128) NOT NULL,
+  catalog_game_id VARCHAR(64) NULL,
+  name VARCHAR(191) NOT NULL,
+  media_type VARCHAR(16) NOT NULL DEFAULT 'physical',
+  platform VARCHAR(16) NOT NULL,
+  cover_url TEXT NULL,
+  region VARCHAR(64) NULL,
+  edition VARCHAR(128) NULL,
+  game_condition VARCHAR(64) NULL,
+  status VARCHAR(32) NOT NULL DEFAULT 'not_started',
+  purchase_price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  purchase_shipping_fee DECIMAL(10,2) NULL,
+  purchase_other_fee DECIMAL(10,2) NULL,
+  purchase_date DATE NULL,
+  purchase_channel VARCHAR(128) NULL,
+  sold_price DECIMAL(10,2) NULL,
+  sold_date DATE NULL,
+  sell_channel VARCHAR(128) NULL,
+  sell_shipping_fee DECIMAL(10,2) NULL,
+  sell_platform_fee DECIMAL(10,2) NULL,
+  sell_other_fee DECIMAL(10,2) NULL,
+  sell_note TEXT NULL,
+  note TEXT NULL,
+  created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (id),
+  KEY idx_user_games_openid_created_at (openid, created_at),
+  KEY idx_user_games_openid_status (openid, status),
+  KEY idx_user_games_catalog_game_id (catalog_game_id),
+  KEY idx_user_games_platform (platform),
+  CONSTRAINT fk_user_games_catalog_game
+    FOREIGN KEY (catalog_game_id)
+    REFERENCES game_catalog (id)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
