@@ -21,7 +21,7 @@ function getDatabaseConfig() {
     MYSQL_ADDRESS: process.env.MYSQL_ADDRESS,
     MYSQL_USERNAME: process.env.MYSQL_USERNAME,
     MYSQL_PASSWORD: process.env.MYSQL_PASSWORD,
-    MYSQL_DATABASE: process.env.MYSQL_DATABASE,
+    MYSQL_DATABASE: process.env.MYSQL_DATABASE || "playback_data",
     host,
     port,
   };
