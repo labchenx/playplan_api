@@ -23,6 +23,14 @@ function getSequelize() {
   return sequelize;
 }
 
+function getSafeDatabaseError(error) {
+  return {
+    errorName: error.name,
+    errorCode: error.original && error.original.code ? error.original.code : error.code,
+    errno: error.original && error.original.errno ? error.original.errno : error.errno,
+  };
+}
+
 async function checkDatabase() {
   const config = getDatabaseConfig();
   const missingEnv = findMissingEnv(config, [
@@ -55,6 +63,7 @@ async function checkDatabase() {
     return {
       ok: false,
       status: "connection_failed",
+      error: getSafeDatabaseError(error),
     };
   }
 }
@@ -103,6 +112,7 @@ async function listDatabaseTables() {
     return {
       ok: false,
       status: "query_failed",
+      error: getSafeDatabaseError(error),
     };
   }
 }
@@ -191,6 +201,7 @@ async function listCatalogGames(options = {}) {
     return {
       ok: false,
       status: "query_failed",
+      error: getSafeDatabaseError(error),
     };
   }
 }
